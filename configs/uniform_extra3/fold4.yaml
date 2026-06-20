@@ -1,0 +1,159 @@
+# No-RL Baseline Configuration (Ablation of attention_pool_extra3)
+# Uniform temporal subsampling of k frames per site (no reinforcement learning)
+# This is an ablation of the best model (attention_pool_extra3) - comparing uniform sampling vs attention pooling
+
+# ==========================================
+# EXPERIMENT CONFIGURATION
+# ==========================================
+experiment_name: "ablation_uniform_extra3_tb_classifier_fold4"
+experiment_dir: "./outputs/ablation_results/uniform_extra3/fold4"
+seed: 42
+device: "cuda"  # "cuda" or "cpu"
+
+# Training control
+train: true
+evaluate_best_valid_model: true
+
+# Model weights and resuming
+model_weights: null  # Path to pretrained weights, null if none
+best_model_path: null  # Path to best model for evaluation only
+resume_from_checkpoint: null
+reset_optimizers: false  # Whether to reset optimizer states when loading
+
+# ==========================================
+# ABLATION MODEL CONFIGURATION
+# ==========================================
+
+# Ablation model type - NO RL baseline
+model_type: "no_rl"
+
+# Active tasks - choose from: ['TB Label', 'Pneumonia Label', 'Covid Label']
+active_tasks:
+  - "TB Label"
+
+# Task-specific weights for loss balancing
+task_weights:
+  "TB Label": 1.0
+
+# Positive class weights for handling class imbalance
+task_pos_weights:
+  "TB Label": 2.0
+
+# Pathology prediction configuration
+use_pathology_loss: true
+pathology_weight: 1.2
+pathology_pos_weights: [1.0, 4.0, 15.0, 4.0]
+num_pathologies: 4
+pathology_classes:
+  - "A-line"
+  - "Large Consolidations"
+  - "Pleural Effusion"
+  - "Other Pathology"
+
+# ==========================================
+# DATA CONFIGURATION
+# ==========================================
+
+# Dataset paths - UPDATE THESE FOR YOUR DATA
+root_dir: "./Data"
+labels_csv: "./Data/labels/labels_multidiagnosis.csv"
+file_metadata_csv: "./Data/processed_files_2.csv"
+split_csv: "./Data/test_files/Fold_4.csv"
+image_folder: "images"
+video_folder: "./Data/LusBeninVideos"
+
+# Data loading parameters
+batch_size: 2
+num_workers: 6
+frame_sampling: 32
+depth_filter: "15"  # Options: 'all', '5', '15'
+
+# Image processing
+target_height: 224
+target_width: 224
+in_channels: 3
+
+# Site selection and ordering
+files_per_site: "all"  # Can be integer or "all"
+site_order: null  # Optional list of site names, null for default order
+pad_missing_sites: true
+max_sites: null  # Optional maximum number of sites
+num_sites: 21
+mode: "video"  # 'video', 'image', or 'both'
+pooling: "attention"  # 'max', 'avg', or 'attention'
+
+# ==========================================
+# MODEL ARCHITECTURE
+# ==========================================
+
+# Model configuration
+model_name: "ablation_uniform_extra3_tb_classifier_fold4"
+
+# Model dimensions
+hidden_dim: 512
+dropout_rate: 0.2
+num_classes: 1  # Binary classification for each task
+classification_type: "binary"
+
+# CLIP backbone configuration
+backbone: "clip"  # Using CLIP vision encoder
+freeze_backbone: false
+pretrained: true
+local_weights_dir: "./CLIP_weights"
+
+# ==========================================
+# TRAINING CONFIGURATION
+# ==========================================
+# Training schedule
+num_epochs: 200
+accumulation_steps: 35
+use_amp: true
+
+# Learning rates and weight decay
+learning_rate: 0.00002
+weight_decay: 0.00001
+
+# Backbone parameters
+backbone_lr: 0.000005
+backbone_weight_decay: 0.00001
+backbone_eta_min: 0.0000005
+
+# Pathology module parameters
+pathology_lr: 0.00001
+pathology_weight_decay: 0.00001
+pathology_eta_min: 0.0000005
+
+# Patient pipeline parameters
+patient_pipeline_lr: 0.000012
+patient_pipeline_weight_decay: 0.00001
+patient_pipeline_eta_min: 0.0000005
+
+# Loss configuration
+pos_weight: 2.0  # Default positive weight for binary classification
+
+# ==========================================
+# EVALUATION CONFIGURATION
+# ==========================================
+
+# Evaluation metrics and early stopping
+eval_metric: "auc"  # Primary metric for model selection
+eval_metric_goal: "max"  # 'max' or 'min'
+early_stopping_patience: 50
+
+# ==========================================
+# DIRECTORIES
+# ==========================================
+log_dir: "./ablation_results/logs"
+save_dir: "./outputs/ablation_results/saves"
+checkpoint_dir: "./outputs/ablation_results/checkpoints"
+pred_save_dir: "./outputs/ablation_results/predictions"
+
+# ==========================================
+# TASK SPECIFIC CONFIGURATION
+# ==========================================
+task: "TB Label"
+
+# ==========================================
+# CHECKPOINT CONFIGURATION
+# ==========================================
+checkpoint_base_dir: "./outputs"

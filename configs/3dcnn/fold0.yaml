@@ -1,0 +1,160 @@
+# 3D CNN Ablation Configuration
+# ResNet3D backbone from torchvision for video understanding
+
+# ==========================================
+# EXPERIMENT CONFIGURATION
+# ==========================================
+experiment_name: "ablation_3d_cnn_tb_classifier_fold0"
+experiment_dir: "./outputs/ablation_results/3dcnn/fold0"
+seed: 42
+device: "cuda"  # "cuda" or "cpu"
+
+# Training control
+train: true
+evaluate_best_valid_model: true
+
+
+# Model weights and resuming
+model_weights: null  # Path to pretrained weights, null if none
+best_model_path: null  # Path to best model for evaluation only
+resume_from_checkpoint: null
+reset_optimizers: false  # Whether to reset optimizer states when loading
+
+# ==========================================
+# ABLATION MODEL CONFIGURATION
+# ==========================================
+
+# Ablation model type - 3D CNN (ResNet3D)
+model_type: "3d_cnn"
+
+# Active tasks - choose from: ['TB Label', 'Pneumonia Label', 'Covid Label']
+active_tasks:
+  - "TB Label"
+
+# Task-specific weights for loss balancing
+task_weights:
+  "TB Label": 1.0
+
+# Positive class weights for handling class imbalance
+task_pos_weights:
+  "TB Label": 2.0  # FIXED: Increased from 1.4 to 2.0
+
+# Pathology prediction configuration
+use_pathology_loss: true
+pathology_weight: 1.2  # FIXED: Increased from 0.9 to 1.2 (match working model)
+pathology_pos_weights: [1.0, 4.0, 15.0, 4.0]
+num_pathologies: 4
+pathology_classes:
+  - "A-line"
+  - "Large Consolidations"
+  - "Pleural Effusion"
+  - "Other Pathology"
+
+# ==========================================
+# DATA CONFIGURATION
+# ==========================================
+
+# Dataset paths - UPDATE THESE FOR YOUR DATA
+root_dir: "./Data"
+labels_csv: "./Data/labels/labels_multidiagnosis.csv"
+file_metadata_csv: "./Data/processed_files_2.csv"
+split_csv: "./Data/test_files/Fold_0.csv"
+image_folder: "images"
+video_folder: "./Data/LusBeninVideos"
+
+# Data loading parameters
+batch_size: 1  # Reduced for 3D CNN memory requirements
+num_workers: 6  # Reduced for 3D CNN
+frame_sampling: 32  # FIXED: Increased to match working models
+depth_filter: "15"  # Options: 'all', '5', '15'
+
+# Image processing
+target_height: 224
+target_width: 224
+in_channels: 3
+
+# Site selection and ordering
+files_per_site: "all"  # Can be integer or "all"
+site_order: null  # Optional list of site names, null for default order
+pad_missing_sites: true
+max_sites: null  # Optional maximum number of sites
+num_sites: 21
+mode: "video"  # 'video', 'image', or 'both'
+pooling: "attention"  # 'max', 'avg', or 'attention'
+
+# ==========================================
+# MODEL ARCHITECTURE
+# ==========================================
+
+# Model configuration
+model_name: "ablation_3d_cnn_tb_classifier_fold0"
+
+# Model dimensions
+hidden_dim: 512
+dropout_rate: 0.2  # FIXED: Reduced from 0.3 to 0.2
+num_classes: 1  # Binary classification for each task
+classification_type: "binary"
+
+# 3D CNN backbone configuration
+backbone: "resnet3d"  # Using ResNet3D from torchvision
+freeze_backbone: false
+backbone_frozen: false  # FIXED: Explicitly unfreeze backbone
+pretrained: true
+
+# ==========================================
+# TRAINING CONFIGURATION
+# ==========================================
+
+# Training schedule
+num_epochs: 100  # FIXED: Increased from 25 to 100 (was too short)
+accumulation_steps: 35  # FIXED: Match working model
+use_amp: true
+
+# Learning rates and weight decay - FIXED: Much lower to prevent collapse
+learning_rate: 0.00003  # FIXED: Reduced from 0.0001 (was 3x too high)
+weight_decay: 0.00001  # FIXED: Reduced from 0.0001
+
+# Backbone parameters - FIXED: Critical - was 20x too high!
+backbone_lr: 0.000005  # FIXED: Reduced from 0.0001 (was causing collapse)
+backbone_weight_decay: 0.00001  # FIXED: Reduced from 0.0001
+backbone_eta_min: 0.0000005  # FIXED: Reduced from 0.000001
+
+# Pathology module parameters - FIXED: Was way too high
+pathology_lr: 0.00001  # FIXED: Reduced from 0.001 (100x reduction!)
+pathology_weight_decay: 0.00001  # FIXED: Reduced from 0.0001
+pathology_eta_min: 0.0000005  # FIXED: Reduced from 0.000001
+
+# Patient pipeline parameters - FIXED: Was way too high
+patient_pipeline_lr: 0.000012  # FIXED: Reduced from 0.001 (80x reduction!)
+patient_pipeline_weight_decay: 0.00001  # FIXED: Reduced from 0.0001
+patient_pipeline_eta_min: 0.0000005  # FIXED: Reduced from 0.000001
+
+# Loss configuration
+pos_weight: 2.0  # FIXED: Increased from 1.4 to match working model
+
+# ==========================================
+# EVALUATION CONFIGURATION
+# ==========================================
+
+# Evaluation metrics and early stopping
+eval_metric: "auc"  # Primary metric for model selection
+eval_metric_goal: "max"  # 'max' or 'min'
+early_stopping_patience: 30  # FIXED: Increased from 10 to 30 for slower learning
+
+# ==========================================
+# DIRECTORIES
+# ==========================================
+log_dir: "./ablation_results/logs"
+save_dir: "./outputs/ablation_results/saves"
+checkpoint_dir: "./outputs/ablation_results/checkpoints"
+pred_save_dir: "./outputs/ablation_results/predictions"
+
+# ==========================================
+# TASK SPECIFIC CONFIGURATION
+# ==========================================
+task: "TB Label"
+
+# ==========================================
+# CHECKPOINT CONFIGURATION
+# ==========================================
+checkpoint_base_dir: "./outputs"

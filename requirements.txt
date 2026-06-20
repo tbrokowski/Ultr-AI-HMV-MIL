@@ -1,0 +1,44 @@
+## NOTE: Core deep learning stack (PyTorch + CUDA libs + NCCL + cuDNN + Triton)
+## is provided by the base image: nvcr.io/nvidia/pytorch:25.08-py3
+## Do NOT pin torch/torchvision/triton or individual nvidia-* CUDA wheels here
+## unless you intentionally override the image's versions.
+
+## IMPORTANT (RAPIDS compatibility): The base NGC PyTorch image you chose bundles
+## RAPIDS components (e.g. cudf / dask-cudf) which currently require:
+##   pandas >=2.0,<2.2.4
+##   numpy  >=1.22,<1.27
+## Previously this file forced newer pandas/numpy (2.3.x / 2.2.x) causing the
+## resolver warning you observed. We now constrain them to a compatible range.
+## If you do NOT need cudf/dask-cudf at all and want the newest numpy/pandas,
+## you can either: (A) use a different base image w/out RAPIDS, or (B) uninstall
+## cudf & dask-cudf inside the image (not recommended unless sure).
+
+## Keep version pins minimal—only where stability or compatibility matters.
+## Transitive deps (certifi, urllib3, etc.) are left unpinned to reduce churn.
+
+numpy>=1.22,<1.27
+pandas>=2.0,<2.2.4
+scipy>=1.10  # upper bound comes indirectly from numpy pin
+scikit-learn>=1.3
+opencv-python
+matplotlib
+seaborn
+PyYAML
+transformers>=4.40.0
+tokenizers  # paired with transformers
+huggingface-hub
+safetensors
+fsspec  # transformers / hub sometimes leverage this
+requests
+tqdm
+regex
+packaging
+joblib
+threadpoolctl
+networkx
+pillow
+python-dateutil
+typing_extensions
+timm>=0.9.0
+
+## END

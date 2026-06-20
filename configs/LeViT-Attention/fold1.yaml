@@ -1,0 +1,82 @@
+experiment_name: ablation_LeVit_attention_pool_tb_classifier_fold1
+experiment_dir: ./outputs/ablation_results/LeViT-Attention/fold1
+seed: 42
+device: cuda
+train: true
+evaluate_best_valid_model: true
+model_weights: null
+best_model_path: null
+resume_from_checkpoint: null
+reset_optimizers: false
+model_type: attention_pool
+active_tasks:
+- TB Label
+task_weights:
+  TB Label: 1.0
+task_pos_weights:
+  TB Label: 2.0
+use_pathology_loss: true
+pathology_weight: 1.2
+pathology_pos_weights:
+- 1.0
+- 4.0
+- 15.0
+- 4.0
+num_pathologies: 4
+pathology_classes:
+- A-line
+- Large Consolidations
+- Pleural Effusion
+- Other Pathology
+root_dir: ./Data
+labels_csv: ./Data/labels/labels_multidiagnosis.csv
+file_metadata_csv: ./Data/processed_files_2.csv
+split_csv: ./Data/test_files/Fold_1.csv
+image_folder: images
+video_folder: "./Data/LusBeninVideos"
+batch_size: 2
+num_workers: 6
+frame_sampling: 32
+depth_filter: '15'
+target_height: 224
+target_width: 224
+in_channels: 3
+files_per_site: all
+site_order: null
+pad_missing_sites: true
+max_sites: null
+num_sites: 21
+mode: video
+pooling: attention
+model_name: ablation_LeVit_attention_pool_tb_classifier_fold1
+hidden_dim: 512
+dropout_rate: 0.2
+num_classes: 1
+classification_type: binary
+backbone: levit_256
+freeze_backbone: false
+pretrained: true
+num_epochs: 100
+accumulation_steps: 35
+use_amp: true
+learning_rate: 0.00002
+weight_decay: 0.00001
+backbone_lr: 0.000005
+backbone_weight_decay: 0.00001
+backbone_eta_min: 0.0000005
+pathology_lr: 0.00001
+pathology_weight_decay: 0.00001
+pathology_eta_min: 0.0000005
+patient_pipeline_lr: 0.000012
+patient_pipeline_weight_decay: 0.00001
+patient_pipeline_eta_min: 0.0000005
+pos_weight: 2.0
+eval_metric: auc
+eval_metric_goal: max
+early_stopping_patience: 50
+log_dir: "./ablation_results/logs"
+save_dir: ./outputs/ablation_results/saves
+checkpoint_dir: ./outputs/ablation_results/checkpoints
+pred_save_dir: ./outputs/ablation_results/predictions
+task: TB Label
+checkpoint_base_dir: ./outputs
