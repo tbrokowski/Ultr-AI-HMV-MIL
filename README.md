@@ -27,16 +27,6 @@ scripts/
   submit_parallel_ablations.sh          # Batch launcher (local or SLURM)
 ```
 
-## Data setup
-
-1. Download the data from the HF repo https://huggingface.co/AI-POCUS-COP
-2. Place lung ultrasound videos under `Data/LusBeninVideos/` (not included in this repo).
-3. Provide a video metadata index at `Data/processed_files_2.csv` (not included; required for training).
-4. Included metadata:
-   - `Data/labels/labels_multidiagnosis.csv`
-   - `Data/test_files/Fold_{0-4}.csv`
-5. Optional: place local CLIP weights in `CLIP_weights/` (otherwise HuggingFace download is used).
-
 ## Environment
 
 Install PyTorch for your CUDA/CPU setup, then:
