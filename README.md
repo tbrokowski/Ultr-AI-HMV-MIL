@@ -29,7 +29,7 @@ scripts/
 
 ## Data setup
 
-1. Download the data from the HF repo https://huggingface.co/datasets/AI-POCUS-COP/Trust-Benin-Videos/settings
+1. Download the data from the HF repo https://huggingface.co/AI-POCUS-COP
 2. Place lung ultrasound videos under `Data/LusBeninVideos/` (not included in this repo).
 3. Provide a video metadata index at `Data/processed_files_2.csv` (not included; required for training).
 4. Included metadata:
