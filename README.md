@@ -8,7 +8,7 @@ HMV-MIL (`model_type: attention_pool`) uses a CLIP ViT backbone with:
 
 1. **Frame-level attention** — learned attention pooling over frames within each anatomical site
 2. **Site pathology heads** — auxiliary multi-label pathology detection per site
-3. **Patient-level MIL** — deep attention aggregation across sites for TB classification
+3. **Patient-level MIL** — gated multiple instance learning for TB classification
 
 ## Repository layout
 
